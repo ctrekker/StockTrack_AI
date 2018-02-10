@@ -3,12 +3,13 @@ package com.burnscoding;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
-public class Query {
+public class QueryCombined {
     private static Connection conn;
     public static void main(String[] args) {
         Date runStart=new Date();
@@ -33,6 +34,24 @@ public class Query {
 //                while(set.next()) {
 //                    System.out.print(set.getTimestamp("entry_time"));
 //                }
+                String createTableQuery =
+                        "CREATE TABLE IF NOT EXISTS public.stock_data_combined\n" +
+                                "(\n" +
+                                "    entry_time TIMESTAMP NOT NULL,\n" +
+                                "    symbol VARCHAR(6),\n" +
+                                "    open FLOAT,\n" +
+                                "    high FLOAT,\n" +
+                                "    low FLOAT,\n" +
+                                "    close FLOAT,\n" +
+                                "    volume FLOAT\n" +
+                                ");";
+
+                conn.prepareStatement(createTableQuery).execute();
+
+                conn
+                        .prepareStatement("DROP INDEX IF EXISTS stock_data_index;")
+                        .execute();
+
                 BufferedReader symbolReader=new BufferedReader(new FileReader(Config.SYMBOL_LIST_PATH));
                 int count=0;
                 String symbol;
@@ -69,32 +88,28 @@ public class Query {
                     }
                 }
                 symbolReader.close();
+
+                // Re-index the database for faster accessing
+                conn
+                        .prepareStatement("CREATE INDEX IF NOT EXISTS stock_data_index ON public.stock_data_combined (symbol, entry_time);")
+                        .execute();
             }
             catch(IOException e) {
                 e.printStackTrace();
+            }
+            catch(SQLException e) {
+                System.out.println("Unable to initialize database indicies/tables");
             }
         }
         System.out.println("Execution took "+((new Date().getTime()-runStart.getTime())/1000.0/60.0/60.0)+" hours");
     }
 
     private static void saveQuery(String symbol, String response) throws SQLException {
-        String createTableQuery =
-                "CREATE TABLE IF NOT EXISTS stock_data."+symbol+"\n" +
-                        "(\n" +
-                        "    entry_time TIMESTAMP PRIMARY KEY NOT NULL,\n" +
-                        "    open FLOAT,\n" +
-                        "    high FLOAT,\n" +
-                        "    low FLOAT,\n" +
-                        "    close FLOAT,\n" +
-                        "    volume FLOAT\n" +
-                        ");";
-
         String[] responseLines=response.split("\n");
 
-        conn.prepareStatement(createTableQuery).execute();
-
-        InsertStatement s=new InsertStatement("stock_data"+symbol);
+        InsertStatement s=new InsertStatement("public.stock_data_combined");
         s.addColumn("entry_time");
+        s.addColumn("symbol");
         s.addColumn("open");
         s.addColumn("high");
         s.addColumn("low");
@@ -107,6 +122,7 @@ public class Query {
 
             String[] splitLine=line.split(",");
             s.addValue(new InsertValue<>(splitLine[0]));
+            s.addValue(new InsertValue<>(symbol));
             s.addValue(new InsertValue<>(Double.parseDouble(splitLine[1])));
             s.addValue(new InsertValue<>(Double.parseDouble(splitLine[2])));
             s.addValue(new InsertValue<>(Double.parseDouble(splitLine[3])));
