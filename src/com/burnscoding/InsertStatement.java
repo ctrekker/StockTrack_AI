@@ -6,6 +6,8 @@ public class InsertStatement {
     private String table;
     private ArrayList<String> columns;
     private ArrayList<InsertValue> values;
+    private String suffix="";
+
     public InsertStatement(String table) {
         this.table=table;
         values=new ArrayList<>();
@@ -53,7 +55,15 @@ public class InsertStatement {
         return out.toString();
     }
     public String getQuery() {
-        String out="INSERT INTO "+table+" ("+getColumnString()+") VALUES ("+getValueString()+")";
+        String out="INSERT INTO "+table+" ("+getColumnString()+") VALUES ("+getValueString()+")"+getSuffix();
         return out;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public String getSuffix() {
+        return suffix;
     }
 }
