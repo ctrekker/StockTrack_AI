@@ -16,7 +16,7 @@ public class QueryCombined {
         try {
             System.out.println("Loading resources...");
             Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/stocktrack_db", "stocktrack", "st_password");
+            conn = DriverManager.getConnection(Config.DB_URL, Config.DB_USERNAME, Config.DB_PASSWORD);
         }
         catch(ClassNotFoundException e) {
             System.out.println("Class org.postgresql.Driver not found!");
