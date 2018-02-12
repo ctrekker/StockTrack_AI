@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class QueryCombined {
+public class Query {
     private static Connection conn;
     public static void main(String[] args) {
         Date runStart=new Date();

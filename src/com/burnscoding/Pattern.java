@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-public class PatternCombined {
+public class Pattern {
     private static Connection conn;
     public static void main(String[] args) {
         Date runStart=new Date();
