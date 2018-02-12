@@ -13,17 +13,7 @@ public class QueryCombined {
     private static Connection conn;
     public static void main(String[] args) {
         Date runStart=new Date();
-        try {
-            System.out.println("Loading resources...");
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(Config.DB_URL, Config.DB_USERNAME, Config.DB_PASSWORD);
-        }
-        catch(ClassNotFoundException e) {
-            System.out.println("Class org.postgresql.Driver not found!");
-        }
-        catch(SQLException e) {
-            e.printStackTrace();
-        }
+        conn=Config.getConnection();
 
         if(conn!=null) {
             System.out.println("Database connection initialized");
