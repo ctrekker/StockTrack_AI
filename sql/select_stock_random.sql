@@ -1,3 +1,3 @@
 SELECT * FROM public.stock_data_combined
   ORDER BY random()
-  LIMIT 1;
+  LIMIT $1;

@@ -10,6 +10,7 @@ public class Config {
     public static String DB_USERNAME="stocktrack";
     public static String DB_PASSWORD="st_password";
     public static int PATTERN_LENGTH=64;
+    public static int PATTERN_NUMBER=1000;
     public static String SYMBOL_LIST_PATH="symbols.txt";
     public static int QUERY_DELAY=5000;
     public static int SYMBOL_LIST_LENGTH=3286;
